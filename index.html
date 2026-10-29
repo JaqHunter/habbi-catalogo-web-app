@@ -3,580 +3,93 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Catálogo Digital | Tienda Demo</title>
+  <title>Catálogo Digital</title>
   <style>
-    :root {
-      --primary: #10b981;
-      --primary-dark: #059669;
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --text: #1e293b;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
-      --radius: 12px;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      padding-bottom: 90px;
-    }
-
-    header {
-      background: var(--card-bg);
-      border-bottom: 1px solid var(--border);
-      padding: 1rem 1.5rem;
-      position: sticky;
-      top: 0;
-      z-index: 50;
-    }
-
-    .header-content {
-      max-width: 1100px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .brand h1 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .brand span {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    .tasa-badge {
-      background: #ecfdf5;
-      color: var(--primary-dark);
-      padding: 0.35rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      border: 1px solid #a7f3d0;
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: 1.5rem auto;
-      padding: 0 1rem;
-    }
-
-    .toolbar {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    @media (min-width: 640px) {
-      .toolbar {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-      }
-    }
-
-    .search-input {
-      padding: 0.75rem 1rem;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      outline: none;
-      font-size: 0.95rem;
-      width: 100%;
-      max-width: 380px;
-    }
-
-    .categories {
-      display: flex;
-      gap: 0.5rem;
-      overflow-x: auto;
-      padding-bottom: 0.25rem;
-    }
-
-    .category-btn {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s;
-    }
-
-    .category-btn.active {
-      background: var(--primary);
-      color: #fff;
-      border-color: var(--primary);
-    }
-
-    .product-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 1.25rem;
-    }
-
-    .product-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-
-    .product-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    }
-
-    .product-image {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-      background: #f1f5f9;
-    }
-
-    .product-info {
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      flex-grow: 1;
-    }
-
-    .product-cat {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      font-weight: 600;
-      color: var(--text-muted);
-      margin-bottom: 0.25rem;
-    }
-
-    .product-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-
-    .product-prices {
-      margin-top: auto;
-      margin-bottom: 0.75rem;
-    }
-
-    .price-usd {
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .price-bs {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .btn-add {
-      background: var(--text);
-      color: #fff;
-      border: none;
-      padding: 0.65rem;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.85rem;
-      transition: background 0.2s;
-    }
-
-    .btn-add:hover {
-      background: #000;
-    }
-
-    .floating-cart-bar {
-      position: fixed;
-      bottom: 1.25rem;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 90%;
-      max-width: 500px;
-      background: var(--text);
-      color: #fff;
-      padding: 0.85rem 1.25rem;
-      border-radius: 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-      cursor: pointer;
-      z-index: 100;
-    }
-
-    .modal-backdrop {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 150;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-    }
-
-    .modal-backdrop.open {
-      display: flex;
-    }
-
-    .cart-modal {
-      background: #fff;
-      width: 100%;
-      max-width: 480px;
-      border-radius: var(--radius);
-      max-height: 85vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .cart-header {
-      padding: 1rem 1.25rem;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .cart-items {
-      padding: 1rem 1.25rem;
-      overflow-y: auto;
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .cart-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 0.5rem;
-    }
-
-    .cart-item-qty {
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-    }
-
-    .cart-item-qty button {
-      width: 26px;
-      height: 26px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      background: #fff;
-      cursor: pointer;
-    }
-
-    .cart-footer {
-      padding: 1.25rem;
-      border-top: 1px solid var(--border);
-      background: #f8fafc;
-    }
-
-    .cart-total-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-    }
-
-    .btn-whatsapp {
-      width: 100%;
-      background: #25d366;
-      color: #fff;
-      border: none;
-      padding: 0.85rem;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 0.75rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-    }
+    body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 20px; background: #f8f9fa; }
+    .header { text-align: center; margin-bottom: 24px; }
+    .tasa-banner { background: #e3f2fd; color: #0d47a1; padding: 8px 16px; border-radius: 8px; display: inline-block; font-weight: bold; margin-top: 8px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
+    .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; flex-direction: column; }
+    .card img { width: 100%; height: 200px; object-fit: cover; background: #eee; }
+    .card-body { padding: 16px; display: flex; flex-direction: column; flex-grow: 1; }
+    .categoria { font-size: 0.75rem; text-transform: uppercase; color: #6c757d; font-weight: bold; margin-bottom: 4px; }
+    .titulo { font-size: 1.1rem; font-weight: bold; margin: 0 0 8px 0; color: #212529; }
+    .precios { margin-top: auto; margin-bottom: 12px; }
+    .precio-usd { font-size: 1.25rem; font-weight: bold; color: #198754; }
+    .precio-bs { font-size: 0.95rem; color: #6c757d; margin-left: 6px; }
+    .btn-pedido { background: #25d366; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; text-decoration: none; text-align: center; }
+    .btn-pedido:hover { background: #1ebc59; }
+    .loading { text-align: center; padding: 40px; font-size: 1.2rem; color: #666; }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="header-content">
-      <div class="brand">
-        <h1>Mi Tienda Online</h1>
-        <span>Catálogo interactivo</span>
-      </div>
-      <div class="tasa-badge" id="tasaDisplay">Tasa: Bs. --</div>
-    </div>
-  </header>
-
-  <div class="container">
-    <div class="toolbar">
-      <input type="text" id="searchInput" class="search-input" placeholder="Buscar producto...">
-      <div class="categories" id="categoryList">
-        <button class="category-btn active" data-cat="all">Todos</button>
-      </div>
-    </div>
-
-    <div class="product-grid" id="productGrid"></div>
+  <div class="header">
+    <h1 id="tienda-nombre">Cargando catálogo...</h1>
+    <div id="tasa-display" class="tasa-banner" style="display: none;"></div>
   </div>
 
-  <div class="floating-cart-bar" id="openCartBtn" style="display: none;">
-    <div>
-      <span id="cartCount">0</span> productos
-    </div>
-    <div style="font-weight: 700;">
-      Ver Pedido: <span id="cartTotalUSD">$0.00</span>
-    </div>
-  </div>
-
-  <div class="modal-backdrop" id="cartModal">
-    <div class="cart-modal">
-      <div class="cart-header">
-        <h3 style="font-size: 1.1rem;">Tu Pedido</h3>
-        <button id="closeCartBtn" style="background: none; border: none; font-size: 1.25rem; cursor: pointer;">&times;</button>
-      </div>
-      <div class="cart-items" id="cartItemsContainer"></div>
-      <div class="cart-footer">
-        <div class="cart-total-row">
-          <span>Total USD:</span>
-          <span id="modalTotalUSD">$0.00</span>
-        </div>
-        <div class="cart-total-row" style="color: var(--text-muted); font-size: 0.9rem;">
-          <span>Total Bs:</span>
-          <span id="modalTotalBs">Bs. 0.00</span>
-        </div>
-        <button class="btn-whatsapp" id="sendWhatsAppBtn">
-          Enviar Pedido por WhatsApp
-        </button>
-      </div>
-    </div>
-  </div>
+  <div id="loader" class="loading">Cargando productos...</div>
+  <div id="catalogo-grid" class="grid" style="display: none;"></div>
 
   <script>
-    // ==========================================
-    // CONFIGURACIÓN INICIAL DEL COMERCIO
-    // ==========================================
-    const WHATSAPP_NUMERO = "584120000000"; // Tu número con código de país sin el '+'
-    const TASA_BCV = 45.50; // Tasa de conversión configurable
+    async function cargarCatalogo() {
+      try {
+        const res = await fetch('/api/productos');
+        if (!res.ok) throw new Error('Error al consultar API');
+        
+        const data = await res.json();
+        const config = data.config || {};
+        const productos = data.productos || [];
+        const tasa = parseFloat(config.tasa_bcv || 0);
 
-    // Lista de productos base (luego se puede leer desde Supabase / API)
-    const PRODUCTOS = [
-      {
-        id: 1,
-        nombre: "Zapatos Deportivos Runner",
-        categoria: "Calzado",
-        precio_usd: 35.00,
-        imagen: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80"
-      },
-      {
-        id: 2,
-        nombre: "Franela Algodón Básica",
-        categoria: "Ropa",
-        precio_usd: 12.00,
-        imagen: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=400&q=80"
-      },
-      {
-        id: 3,
-        nombre: "Gorra Snapback Urbana",
-        categoria: "Accesorios",
-        precio_usd: 15.00,
-        imagen: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400&q=80"
-      },
-      {
-        id: 4,
-        nombre: "Jeans Clásico Denim",
-        categoria: "Ropa",
-        precio_usd: 28.00,
-        imagen: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400&q=80"
-      }
-    ];
+        // 1. Mostrar nombre de la tienda y tasa
+        if (config.nombre_tienda) document.getElementById('tienda-nombre').textContent = config.nombre_tienda;
+        if (tasa > 0) {
+          const tasaEl = document.getElementById('tasa-display');
+          tasaEl.textContent = `Tasa del día: ${tasa.toFixed(2)} Bs/$`;
+          tasaEl.style.display = 'inline-block';
+        }
 
-    let carrito = [];
-    let categoriaActiva = "all";
-    let busquedaActiva = "";
+        // 2. Renderizar productos
+        const grid = document.getElementById('catalogo-grid');
+        grid.innerHTML = '';
 
-    document.getElementById("tasaDisplay").innerText = `Tasa: Bs. ${TASA_BCV.toFixed(2)}`;
+        productos.forEach(prod => {
+          const precioUSD = parseFloat(prod.precio_usd);
+          const precioBs = tasa > 0 ? (precioUSD * tasa).toFixed(2) : null;
+          
+          // Enlace directo a WhatsApp con mensaje precargado
+          const mensajeWa = encodeURIComponent(`¡Hola! Me interesa el producto: ${prod.nombre} ($${precioUSD.toFixed(2)})`);
+          const linkWa = `https://wa.me/${config.whatsapp_contacto || ''}?text=${mensajeWa}`;
 
-    function initCategorias() {
-      const categorias = ["all", ...new Set(PRODUCTOS.map(p => p.categoria))];
-      const container = document.getElementById("categoryList");
-      container.innerHTML = "";
-
-      categorias.forEach(cat => {
-        const btn = document.createElement("button");
-        btn.className = `category-btn ${cat === categoriaActiva ? "active" : ""}`;
-        btn.textContent = cat === "all" ? "Todos" : cat;
-        btn.onclick = () => {
-          categoriaActiva = cat;
-          document.querySelectorAll(".category-btn").forEach(b => b.classList.remove("active"));
-          btn.classList.add("active");
-          renderProductos();
-        };
-        container.appendChild(btn);
-      });
-    }
-
-    function renderProductos() {
-      const grid = document.getElementById("productGrid");
-      grid.innerHTML = "";
-
-      const filtrados = PRODUCTOS.filter(p => {
-        const coincideCat = categoriaActiva === "all" || p.categoria === categoriaActiva;
-        const coincideBusqueda = p.nombre.toLowerCase().includes(busquedaActiva.toLowerCase());
-        return coincideCat && coincideBusqueda;
-      });
-
-      if (filtrados.length === 0) {
-        grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem;">No se encontraron productos.</p>`;
-        return;
-      }
-
-      filtrados.forEach(prod => {
-        const precioBs = (prod.precio_usd * TASA_BCV).toFixed(2);
-        const card = document.createElement("div");
-        card.className = "product-card";
-        card.innerHTML = `
-          <img src="${prod.imagen}" alt="${prod.nombre}" class="product-image" loading="lazy">
-          <div class="product-info">
-            <span class="product-cat">${prod.categoria}</span>
-            <h4 class="product-title">${prod.nombre}</h4>
-            <div class="product-prices">
-              <div class="price-usd">$${prod.precio_usd.toFixed(2)}</div>
-              <div class="price-bs">Bs. ${precioBs}</div>
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <img src="${prod.imagen_url || 'https://via.placeholder.com/300'}" alt="${prod.nombre}" loading="lazy" onerror="this.src='https://via.placeholder.com/300?text=Sin+Imagen'">
+            <div class="card-body">
+              <span class="categoria">${prod.categoria || 'General'}</span>
+              <h2 class="titulo">${prod.nombre}</h2>
+              <div class="precios">
+                <span class="precio-usd">$${precioUSD.toFixed(2)}</span>
+                ${precioBs ? `<span class="precio-bs">(${precioBs} Bs)</span>` : ''}
+              </div>
+              <a href="${linkWa}" target="_blank" class="btn-pedido">Pedir por WhatsApp</a>
             </div>
-            <button class="btn-add" onclick="agregarAlCarrito(${prod.id})">Agregar al pedido</button>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-    }
+          `;
+          grid.appendChild(card);
+        });
 
-    function agregarAlCarrito(id) {
-      const prod = PRODUCTOS.find(p => p.id === id);
-      const item = carrito.find(i => i.id === id);
-      if (item) {
-        item.cantidad += 1;
-      } else {
-        carrito.push({ ...prod, cantidad: 1 });
+        document.getElementById('loader').style.display = 'none';
+        grid.style.display = 'grid';
+
+      } catch (err) {
+        console.error(err);
+        document.getElementById('loader').textContent = 'No se pudo cargar el catálogo. Intenta de nuevo más tarde.';
       }
-      actualizarInterfazCarrito();
     }
 
-    function cambiarCantidad(id, delta) {
-      const item = carrito.find(i => i.id === id);
-      if (!item) return;
-
-      item.cantidad += delta;
-      if (item.cantidad <= 0) {
-        carrito = carrito.filter(i => i.id !== id);
-      }
-      actualizarInterfazCarrito();
-    }
-
-    function actualizarInterfazCarrito() {
-      const totalItems = carrito.reduce((acc, item) => acc + item.cantidad, 0);
-      const totalUSD = carrito.reduce((acc, item) => acc + (item.precio_usd * item.cantidad), 0);
-      const totalBs = (totalUSD * TASA_BCV).toFixed(2);
-
-      const cartBar = document.getElementById("openCartBtn");
-      if (totalItems > 0) {
-        cartBar.style.display = "flex";
-        document.getElementById("cartCount").innerText = totalItems;
-        document.getElementById("cartTotalUSD").innerText = `$${totalUSD.toFixed(2)}`;
-      } else {
-        cartBar.style.display = "none";
-        document.getElementById("cartModal").classList.remove("open");
-      }
-
-      document.getElementById("modalTotalUSD").innerText = `$${totalUSD.toFixed(2)}`;
-      document.getElementById("modalTotalBs").innerText = `Bs. ${totalBs}`;
-
-      const itemsContainer = document.getElementById("cartItemsContainer");
-      itemsContainer.innerHTML = "";
-
-      carrito.forEach(item => {
-        const subtotal = (item.precio_usd * item.cantidad).toFixed(2);
-        const el = document.createElement("div");
-        el.className = "cart-item";
-        el.innerHTML = `
-          <div>
-            <div style="font-weight: 600; font-size: 0.9rem;">${item.nombre}</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted);">$${item.precio_usd.toFixed(2)} c/u</div>
-          </div>
-          <div class="cart-item-qty">
-            <button onclick="cambiarCantidad(${item.id}, -1)">-</button>
-            <span style="font-weight: 600; min-width: 20px; text-align: center;">${item.cantidad}</span>
-            <button onclick="cambiarCantidad(${item.id}, 1)">+</button>
-            <span style="margin-left: 0.5rem; font-weight: 600;">$${subtotal}</span>
-          </div>
-        `;
-        itemsContainer.appendChild(el);
-      });
-    }
-
-    // Modal del Carrito
-    document.getElementById("openCartBtn").onclick = () => {
-      document.getElementById("cartModal").classList.add("open");
-    };
-
-    document.getElementById("closeCartBtn").onclick = () => {
-      document.getElementById("cartModal").classList.remove("open");
-    };
-
-    // Buscador
-    document.getElementById("searchInput").addEventListener("input", (e) => {
-      busquedaActiva = e.target.value;
-      renderProductos();
-    });
-
-    // Envío por WhatsApp
-    document.getElementById("sendWhatsAppBtn").onclick = () => {
-      if (carrito.length === 0) return;
-
-      const totalUSD = carrito.reduce((acc, item) => acc + (item.precio_usd * item.cantidad), 0);
-      const totalBs = (totalUSD * TASA_BCV).toFixed(2);
-
-      let mensaje = `*NUEVO PEDIDO DESDE EL CATÁLOGO*\n`;
-      mensaje += `------------------------------------\n`;
-
-      carrito.forEach(item => {
-        mensaje += `• ${item.cantidad}x ${item.nombre} - $${(item.precio_usd * item.cantidad).toFixed(2)}\n`;
-      });
-
-      mensaje += `------------------------------------\n`;
-      mensaje += `*Total USD:* $${totalUSD.toFixed(2)}\n`;
-      mensaje += `*Total Bs:* Bs. ${totalBs} (Tasa: ${TASA_BCV.toFixed(2)})\n\n`;
-      mensaje += `Hola, deseo concretar este pedido. ¿Cuáles son los datos de pago?`;
-
-      const url = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(mensaje)}`;
-      window.open(url, "_blank");
-    };
-
-    // Inicio
-    initCategorias();
-    renderProductos();
+    cargarCatalogo();
   </script>
 </body>
 </html>
