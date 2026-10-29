@@ -3,37 +3,210 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Catálogo Digital | Habibi Sport</title>
+  <title>Habibi Sport - Catálogo Interactivo</title>
   <style>
-    body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 20px; background: #f8f9fa; }
-    .header { text-align: center; margin-bottom: 24px; }
-    .tasa-banner { background: #e3f2fd; color: #0d47a1; padding: 8px 16px; border-radius: 8px; display: inline-block; font-weight: bold; margin-top: 8px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
-    .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; flex-direction: column; }
-    .card img { width: 100%; height: 220px; object-fit: cover; background: #eee; }
-    .card-body { padding: 16px; display: flex; flex-direction: column; flex-grow: 1; }
-    .categoria { font-size: 0.75rem; text-transform: uppercase; color: #6c757d; font-weight: bold; margin-bottom: 4px; }
-    .titulo { font-size: 1.1rem; font-weight: bold; margin: 0 0 8px 0; color: #212529; }
-    .precios { margin-top: auto; margin-bottom: 12px; }
-    .precio-usd { font-size: 1.25rem; font-weight: bold; color: #198754; }
-    .precio-bs { font-size: 0.95rem; color: #6c757d; margin-left: 6px; }
-    .btn-pedido { background: #25d366; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; text-decoration: none; text-align: center; }
-    .btn-pedido:hover { background: #1ebc59; }
-    .loading { text-align: center; padding: 40px; font-size: 1.2rem; color: #666; }
+    :root {
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --primary: #00b488;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --btn-dark: #1e293b;
+      --btn-dark-hover: #0f172a;
+      --border-color: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg-color); color: var(--text-main); padding: 24px 20px; }
+    .container { max-width: 1200px; margin: 0 auto; }
+
+    /* Cabecera */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .header-info h1 { font-size: 24px; font-weight: 800; color: #1e293b; }
+    .header-info p { font-size: 14px; color: var(--text-muted); margin-top: 3px; }
+    
+    .rate-badge {
+      background: #e6f9f3;
+      color: #059669;
+      font-weight: 700;
+      font-size: 13.5px;
+      padding: 7px 16px;
+      border-radius: 20px;
+      border: 1px solid #a7f3d0;
+      display: none;
+    }
+
+    /* Buscador y Píldoras de Categorías */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+    .search-input {
+      flex: 1;
+      min-width: 260px;
+      padding: 11px 18px;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      font-size: 14px;
+      background: #fff;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 180, 136, 0.15);
+    }
+
+    .category-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pill {
+      background: #fff;
+      border: 1px solid var(--border-color);
+      color: #475569;
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .pill.active, .pill:hover {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    /* Catálogo Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 22px;
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+      border: 1px solid #f1f5f9;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover { 
+      transform: translateY(-3px); 
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.08); 
+    }
+    
+    .card img {
+      width: 100%;
+      height: 210px;
+      object-fit: cover;
+      background: #f1f5f9;
+    }
+    .card-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+    .categoria-tag {
+      font-size: 11px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 5px;
+    }
+    .titulo {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 12px;
+      line-height: 1.35;
+      min-height: 40px;
+    }
+    .precios { 
+      margin-top: auto; 
+      margin-bottom: 14px; 
+    }
+    .precio-usd { 
+      font-size: 19px; 
+      font-weight: 800; 
+      color: #0f172a; 
+    }
+    .precio-bs { 
+      font-size: 12.5px; 
+      color: var(--text-muted); 
+      margin-top: 2px; 
+    }
+
+    .btn-pedido {
+      background: var(--btn-dark);
+      color: #fff;
+      border: none;
+      padding: 11px 16px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 13.5px;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      display: block;
+      transition: background 0.2s;
+    }
+    .btn-pedido:hover { background: var(--btn-dark-hover); }
+
+    .loading { 
+      text-align: center; 
+      padding: 60px 20px; 
+      font-size: 15px; 
+      color: var(--text-muted); 
+    }
+    .no-results {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 50px 20px;
+      color: var(--text-muted);
+      font-size: 15px;
+    }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <h1 id="tienda-nombre">Cargando catálogo...</h1>
-    <div id="tasa-display" class="tasa-banner" style="display: none;"></div>
+  <div class="container">
+    <!-- Cabecera -->
+    <header class="header">
+      <div class="header-info">
+        <h1 id="tienda-nombre">Mi Tienda Online</h1>
+        <p>Catálogo interactivo</p>
+      </div>
+      <div id="tasa-display" class="rate-badge">Tasa: Bs. --</div>
+    </header>
+
+    <!-- Controles: Barra de búsqueda y Categorías -->
+    <div class="controls">
+      <input type="text" id="searchInput" class="search-input" placeholder="Buscar producto..." />
+      <div class="category-pills" id="categoryContainer">
+        <button class="pill active" onclick="filtrarCategoria('Todos')">Todos</button>
+      </div>
+    </div>
+
+    <!-- Indicador de carga y Catálogo Grid -->
+    <div id="loader" class="loading">Cargando catálogo...</div>
+    <div id="catalogo-grid" class="grid" style="display: none;"></div>
   </div>
 
-  <div id="loader" class="loading">Cargando productos...</div>
-  <div id="catalogo-grid" class="grid" style="display: none;"></div>
-
   <script>
-    // Datos de respaldo con los productos de la tienda en caso de abrir en local o sin conexión
+    // Respaldo de contingencia
     const PRODUCTOS_FALLBACK = {
       config: {
         nombre_tienda: "Habibi Sport",
@@ -68,6 +241,11 @@
       ]
     };
 
+    let catalogoGlobal = [];
+    let configGlobal = {};
+    let tasaGlobal = 0;
+    let categoriaActiva = 'Todos';
+
     function formatearRutaImagen(url) {
       if (!url) return '';
       if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
@@ -81,67 +259,99 @@
 
     function manejarErrorImagen(img) {
       if (img.dataset.fallbackTried === "1") {
-        img.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect width="100%" height="100%" fill="%23f1f5f9"/><text x="50%" y="50%" fill="%2394a3b8" font-family="system-ui,sans-serif" font-size="16" text-anchor="middle" dominant-baseline="middle">Sin imagen disponible</text></svg>';
+        img.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect width="100%" height="100%" fill="%23f1f5f9"/><text x="50%" y="50%" fill="%2394a3b8" font-family="system-ui,sans-serif" font-size="14" text-anchor="middle" dominant-baseline="middle">Sin imagen disponible</text></svg>';
         return;
       }
       img.dataset.fallbackTried = "1";
-      // Si la ruta tenía /imagenes/, probar con /img/ o viceversa
       if (img.src.includes('/imagenes/')) {
         img.src = img.src.replace('/imagenes/', '/img/');
       } else if (img.src.includes('/img/')) {
         img.src = img.src.replace('/img/', '/imagenes/');
       } else {
-        img.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect width="100%" height="100%" fill="%23f1f5f9"/><text x="50%" y="50%" fill="%2394a3b8" font-family="system-ui,sans-serif" font-size="16" text-anchor="middle" dominant-baseline="middle">Sin imagen disponible</text></svg>';
+        img.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect width="100%" height="100%" fill="%23f1f5f9"/><text x="50%" y="50%" fill="%2394a3b8" font-family="system-ui,sans-serif" font-size="14" text-anchor="middle" dominant-baseline="middle">Sin imagen disponible</text></svg>';
       }
     }
 
-    function renderizar(data) {
-      const config = data.config || {};
-      const productos = data.productos || [];
-      const tasa = parseFloat(config.tasa_bcv || 0);
+    function generarCategorias() {
+      const categoriasUnicas = ['Todos', ...new Set(catalogoGlobal.map(p => p.categoria || 'Accesorios'))];
+      const container = document.getElementById('categoryContainer');
+      
+      container.innerHTML = categoriasUnicas.map(c => `
+        <button class="pill ${c === categoriaActiva ? 'active' : ''}" onclick="filtrarCategoria('${c}')">
+          ${c}
+        </button>
+      `).join('');
+    }
 
-      // 1. Mostrar nombre de la tienda y tasa
-      if (config.nombre_tienda) document.getElementById('tienda-nombre').textContent = config.nombre_tienda;
-      if (tasa > 0) {
+    function filtrarCategoria(categoria) {
+      categoriaActiva = categoria;
+      generarCategorias();
+      renderizarGrid();
+    }
+
+    function renderizarGrid() {
+      const grid = document.getElementById('catalogo-grid');
+      const query = document.getElementById('searchInput').value.trim().toLowerCase();
+
+      const filtrados = catalogoGlobal.filter(prod => {
+        const matchCat = (categoriaActiva === 'Todos' || (prod.categoria || 'Accesorios') === categoriaActiva);
+        const matchText = prod.nombre.toLowerCase().includes(query);
+        return matchCat && matchText;
+      });
+
+      if (filtrados.length === 0) {
+        grid.innerHTML = `<div class="no-results">No se encontraron productos disponibles con ese criterio.</div>`;
+        return;
+      }
+
+      grid.innerHTML = filtrados.map(prod => {
+        const precioUSD = parseFloat(prod.precio_usd || 0);
+        const precioBs = tasaGlobal > 0 ? (precioUSD * tasaGlobal).toFixed(2) : null;
+        const rutaImagen = formatearRutaImagen(prod.imagen_url);
+        
+        const mensajeWa = encodeURIComponent(`¡Hola! Me interesa el producto: ${prod.nombre} ($${precioUSD.toFixed(2)})`);
+        const linkWa = `https://wa.me/${configGlobal.whatsapp_contacto || ''}?text=${mensajeWa}`;
+
+        return `
+          <div class="card">
+            <img src="${rutaImagen}" alt="${prod.nombre}" loading="lazy" onerror="manejarErrorImagen(this)">
+            <div class="card-body">
+              <span class="categoria-tag">${prod.categoria || 'ACCESORIOS'}</span>
+              <h2 class="titulo">${prod.nombre}</h2>
+              <div class="precios">
+                <div class="precio-usd">$${precioUSD.toFixed(2)}</div>
+                ${precioBs ? `<div class="precio-bs">Bs. ${Number(precioBs).toLocaleString('es-VE', { minimumFractionDigits: 2 })}</div>` : ''}
+              </div>
+              <a href="${linkWa}" target="_blank" class="btn-pedido">Agregar al pedido</a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function inicializarUI(data) {
+      configGlobal = data.config || {};
+      catalogoGlobal = data.productos || [];
+      tasaGlobal = parseFloat(configGlobal.tasa_bcv || 0);
+
+      if (configGlobal.nombre_tienda) {
+        document.getElementById('tienda-nombre').textContent = configGlobal.nombre_tienda;
+      }
+
+      if (tasaGlobal > 0) {
         const tasaEl = document.getElementById('tasa-display');
-        tasaEl.textContent = `Tasa del día: ${tasa.toFixed(2)} Bs/$`;
+        tasaEl.textContent = `Tasa: Bs. ${tasaGlobal.toFixed(2)}`;
         tasaEl.style.display = 'inline-block';
       }
 
-      // 2. Renderizar productos
-      const grid = document.getElementById('catalogo-grid');
-      grid.innerHTML = '';
-
-      productos.forEach(prod => {
-        const precioUSD = parseFloat(prod.precio_usd);
-        const precioBs = tasa > 0 ? (precioUSD * tasa).toFixed(2) : null;
-        
-        // Enlace directo a WhatsApp con mensaje precargado
-        const mensajeWa = encodeURIComponent(`¡Hola! Me interesa el producto: ${prod.nombre} ($${precioUSD.toFixed(2)})`);
-        const linkWa = `https://wa.me/${config.whatsapp_contacto || ''}?text=${mensajeWa}`;
-
-        const rutaImagen = formatearRutaImagen(prod.imagen_url);
-
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-          <img src="${rutaImagen}" alt="${prod.nombre}" loading="lazy" onerror="manejarErrorImagen(this)">
-          <div class="card-body">
-            <span class="categoria">${prod.categoria || 'General'}</span>
-            <h2 class="titulo">${prod.nombre}</h2>
-            <div class="precios">
-              <span class="precio-usd">$${precioUSD.toFixed(2)}</span>
-              ${precioBs ? `<span class="precio-bs">(${precioBs} Bs)</span>` : ''}
-            </div>
-            <a href="${linkWa}" target="_blank" class="btn-pedido">Pedir por WhatsApp</a>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
+      generarCategorias();
+      renderizarGrid();
 
       document.getElementById('loader').style.display = 'none';
-      grid.style.display = 'grid';
+      document.getElementById('catalogo-grid').style.display = 'grid';
     }
+
+    document.getElementById('searchInput').addEventListener('input', renderizarGrid);
 
     async function cargarCatalogo() {
       try {
@@ -149,10 +359,10 @@
         if (!res.ok) throw new Error('Error al consultar API');
         
         const data = await res.json();
-        renderizar(data);
+        inicializarUI(data);
       } catch (err) {
-        console.warn('API no disponible localmente, cargando catálogo de respaldo:', err);
-        renderizar(PRODUCTOS_FALLBACK);
+        console.warn('API no disponible, cargando respaldo local:', err);
+        inicializarUI(PRODUCTOS_FALLBACK);
       }
     }
 
