@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Catálogo Digital</title>
+  <title>Catálogo Digital | Habibi Sport</title>
   <style>
     body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 20px; background: #f8f9fa; }
     .header { text-align: center; margin-bottom: 24px; }
     .tasa-banner { background: #e3f2fd; color: #0d47a1; padding: 8px 16px; border-radius: 8px; display: inline-block; font-weight: bold; margin-top: 8px; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
     .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; flex-direction: column; }
-    .card img { width: 100%; height: 200px; object-fit: cover; background: #eee; }
+    .card img { width: 100%; height: 220px; object-fit: cover; background: #eee; }
     .card-body { padding: 16px; display: flex; flex-direction: column; flex-grow: 1; }
     .categoria { font-size: 0.75rem; text-transform: uppercase; color: #6c757d; font-weight: bold; margin-bottom: 4px; }
     .titulo { font-size: 1.1rem; font-weight: bold; margin: 0 0 8px 0; color: #212529; }
@@ -33,59 +33,126 @@
   <div id="catalogo-grid" class="grid" style="display: none;"></div>
 
   <script>
+    // Datos de respaldo con los productos de la tienda en caso de abrir en local o sin conexión
+    const PRODUCTOS_FALLBACK = {
+      config: {
+        nombre_tienda: "Habibi Sport",
+        tasa_bcv: "888.89",
+        whatsapp_contacto: "584120000000"
+      },
+      productos: [
+        {
+          id: 3,
+          nombre: "Oakley Radar ev triple A",
+          precio_usd: "20.00",
+          stock: 8,
+          imagen_url: "./imagenes/Oakley-Radar-ev-triple-A.jpeg",
+          categoria: "Accesorios"
+        },
+        {
+          id: 2,
+          nombre: "Oakley Juliet triple A",
+          precio_usd: "15.00",
+          stock: 5,
+          imagen_url: "./imagenes/Oakley-Juliet-triple-A.jpeg",
+          categoria: "Accesorios"
+        },
+        {
+          id: 1,
+          nombre: "Oakley Kilyan mbappe triple A",
+          precio_usd: "12.00",
+          stock: 10,
+          imagen_url: "./imagenes/Oakley-Kilyan-mbappe-triple-A.jpeg",
+          categoria: "Accesorios"
+        }
+      ]
+    };
+
+    function formatearRutaImagen(url) {
+      if (!url) return '';
+      if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+        return url;
+      }
+      if (url.startsWith('/')) {
+        return '.' + url;
+      }
+      return './' + url;
+    }
+
+    function manejarErrorImagen(img) {
+      if (img.dataset.fallbackTried === "1") {
+        img.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect width="100%" height="100%" fill="%23f1f5f9"/><text x="50%" y="50%" fill="%2394a3b8" font-family="system-ui,sans-serif" font-size="16" text-anchor="middle" dominant-baseline="middle">Sin imagen disponible</text></svg>';
+        return;
+      }
+      img.dataset.fallbackTried = "1";
+      // Si la ruta tenía /imagenes/, probar con /img/ o viceversa
+      if (img.src.includes('/imagenes/')) {
+        img.src = img.src.replace('/imagenes/', '/img/');
+      } else if (img.src.includes('/img/')) {
+        img.src = img.src.replace('/img/', '/imagenes/');
+      } else {
+        img.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect width="100%" height="100%" fill="%23f1f5f9"/><text x="50%" y="50%" fill="%2394a3b8" font-family="system-ui,sans-serif" font-size="16" text-anchor="middle" dominant-baseline="middle">Sin imagen disponible</text></svg>';
+      }
+    }
+
+    function renderizar(data) {
+      const config = data.config || {};
+      const productos = data.productos || [];
+      const tasa = parseFloat(config.tasa_bcv || 0);
+
+      // 1. Mostrar nombre de la tienda y tasa
+      if (config.nombre_tienda) document.getElementById('tienda-nombre').textContent = config.nombre_tienda;
+      if (tasa > 0) {
+        const tasaEl = document.getElementById('tasa-display');
+        tasaEl.textContent = `Tasa del día: ${tasa.toFixed(2)} Bs/$`;
+        tasaEl.style.display = 'inline-block';
+      }
+
+      // 2. Renderizar productos
+      const grid = document.getElementById('catalogo-grid');
+      grid.innerHTML = '';
+
+      productos.forEach(prod => {
+        const precioUSD = parseFloat(prod.precio_usd);
+        const precioBs = tasa > 0 ? (precioUSD * tasa).toFixed(2) : null;
+        
+        // Enlace directo a WhatsApp con mensaje precargado
+        const mensajeWa = encodeURIComponent(`¡Hola! Me interesa el producto: ${prod.nombre} ($${precioUSD.toFixed(2)})`);
+        const linkWa = `https://wa.me/${config.whatsapp_contacto || ''}?text=${mensajeWa}`;
+
+        const rutaImagen = formatearRutaImagen(prod.imagen_url);
+
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <img src="${rutaImagen}" alt="${prod.nombre}" loading="lazy" onerror="manejarErrorImagen(this)">
+          <div class="card-body">
+            <span class="categoria">${prod.categoria || 'General'}</span>
+            <h2 class="titulo">${prod.nombre}</h2>
+            <div class="precios">
+              <span class="precio-usd">$${precioUSD.toFixed(2)}</span>
+              ${precioBs ? `<span class="precio-bs">(${precioBs} Bs)</span>` : ''}
+            </div>
+            <a href="${linkWa}" target="_blank" class="btn-pedido">Pedir por WhatsApp</a>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+
+      document.getElementById('loader').style.display = 'none';
+      grid.style.display = 'grid';
+    }
+
     async function cargarCatalogo() {
       try {
         const res = await fetch('/api/productos');
         if (!res.ok) throw new Error('Error al consultar API');
         
         const data = await res.json();
-        const config = data.config || {};
-        const productos = data.productos || [];
-        const tasa = parseFloat(config.tasa_bcv || 0);
-
-        // 1. Mostrar nombre de la tienda y tasa
-        if (config.nombre_tienda) document.getElementById('tienda-nombre').textContent = config.nombre_tienda;
-        if (tasa > 0) {
-          const tasaEl = document.getElementById('tasa-display');
-          tasaEl.textContent = `Tasa del día: ${tasa.toFixed(2)} Bs/$`;
-          tasaEl.style.display = 'inline-block';
-        }
-
-        // 2. Renderizar productos
-        const grid = document.getElementById('catalogo-grid');
-        grid.innerHTML = '';
-
-        productos.forEach(prod => {
-          const precioUSD = parseFloat(prod.precio_usd);
-          const precioBs = tasa > 0 ? (precioUSD * tasa).toFixed(2) : null;
-          
-          // Enlace directo a WhatsApp con mensaje precargado
-          const mensajeWa = encodeURIComponent(`¡Hola! Me interesa el producto: ${prod.nombre} ($${precioUSD.toFixed(2)})`);
-          const linkWa = `https://wa.me/${config.whatsapp_contacto || ''}?text=${mensajeWa}`;
-
-          const card = document.createElement('div');
-          card.className = 'card';
-          card.innerHTML = `
-            <img src="${prod.imagen_url || 'https://via.placeholder.com/300'}" alt="${prod.nombre}" loading="lazy" onerror="this.src='https://via.placeholder.com/300?text=Sin+Imagen'">
-            <div class="card-body">
-              <span class="categoria">${prod.categoria || 'General'}</span>
-              <h2 class="titulo">${prod.nombre}</h2>
-              <div class="precios">
-                <span class="precio-usd">$${precioUSD.toFixed(2)}</span>
-                ${precioBs ? `<span class="precio-bs">(${precioBs} Bs)</span>` : ''}
-              </div>
-              <a href="${linkWa}" target="_blank" class="btn-pedido">Pedir por WhatsApp</a>
-            </div>
-          `;
-          grid.appendChild(card);
-        });
-
-        document.getElementById('loader').style.display = 'none';
-        grid.style.display = 'grid';
-
+        renderizar(data);
       } catch (err) {
-        console.error(err);
-        document.getElementById('loader').textContent = 'No se pudo cargar el catálogo. Intenta de nuevo más tarde.';
+        console.warn('API no disponible localmente, cargando catálogo de respaldo:', err);
+        renderizar(PRODUCTOS_FALLBACK);
       }
     }
 
