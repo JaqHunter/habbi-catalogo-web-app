@@ -23,7 +23,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, error: 'Método no permitido. Solo se acepta POST.' });
   }
 
-  const { cliente, entrega, pago, totales, items } = req.body || {};
+  const { cliente, entrega, pago, totales, items, tienda, tienda_id } = req.body || {};
 
   // 1. Validaciones de carga útil (Payload)
   if (!items || !Array.isArray(items) || items.length === 0) {
@@ -141,6 +141,10 @@ export default async function handler(req, res) {
         pedidoFields.push('numero_orden');
         pedidoValues.push(numeroOrden);
       }
+      if (colsPedidos.has('tienda_id') && (tienda_id || tienda)) {
+        pedidoFields.push('tienda_id');
+        pedidoValues.push(tienda_id || tienda);
+      }
       if (colsPedidos.has('cliente_id') && clienteId) {
         pedidoFields.push('cliente_id');
         pedidoValues.push(clienteId);
@@ -160,6 +164,10 @@ export default async function handler(req, res) {
       if (colsPedidos.has('banco_origen')) {
         pedidoFields.push('banco_origen');
         pedidoValues.push(pago.banco_origen || null);
+      }
+      if (colsPedidos.has('titular_origen') && pago.titular_origen) {
+        pedidoFields.push('titular_origen');
+        pedidoValues.push(pago.titular_origen);
       }
       if (colsPedidos.has('referencia_pago')) {
         pedidoFields.push('referencia_pago');
