@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Habibi Sport - Catálogo Interactivo</title>
+  <title>QUBO Sync - Catálogo Interactivo</title>
   <style>
     :root {
       --bg-color: #f8fafc;
@@ -384,7 +384,7 @@
       color: #475569;
       margin-bottom: 6px;
     }
-    .form-input, .form-select, .form-textarea {
+    .form-input, .form-textarea {
       width: 100%;
       padding: 10px 14px;
       border: 1px solid var(--border-color);
@@ -394,11 +394,11 @@
       outline: none;
       transition: border-color 0.2s;
     }
-    .form-input:focus, .form-select:focus, .form-textarea:focus {
+    .form-input:focus, .form-textarea:focus {
       border-color: var(--primary);
     }
 
-    /* Radios estilizados para Entrega y Pago */
+    /* Radios estilizados para Entrega */
     .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
     .option-card {
       border: 1px solid var(--border-color);
@@ -420,26 +420,77 @@
       color: var(--primary-dark);
     }
 
-    /* Cajas con información de pago */
-    .payment-info-box {
-      background: #fffbeb;
-      border: 1px solid #fef3c7;
-      border-radius: 10px;
-      padding: 12px 14px;
-      font-size: 12.5px;
-      color: #92400e;
-      margin-bottom: 14px;
-      line-height: 1.5;
+    /* -------------------------------------------------------------
+       COMPONENTE DE PAGO DINÁMICO (ESTILO OSCURO CORPORATIVO)
+       ------------------------------------------------------------- */
+    .metodos-pago-container {
+      background: #0a1226;
+      border: 1px solid #1f3b73;
+      border-radius: 12px;
+      padding: 16px;
+      color: #fff;
+      margin-top: 10px;
+      margin-bottom: 18px;
     }
-    .payment-info-box strong { color: #78350f; }
-    .copy-btn {
-      background: #fef3c7;
-      border: 1px solid #fde68a;
-      border-radius: 6px;
-      padding: 2px 6px;
-      font-size: 11px;
+    .metodos-pago-titulo {
+      margin: 0 0 12px;
+      color: #38bdf8;
+      font-size: 14.5px;
+      font-weight: 800;
+    }
+    .tabs-pago {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .tab-pago-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
       cursor: pointer;
-      margin-left: 6px;
+      font-weight: bold;
+      font-size: 13.5px;
+      transition: all 0.2s ease;
+    }
+    .tab-pago-btn:active {
+      transform: scale(0.98);
+    }
+    .btn-copiar-pago {
+      background: #1f3b73;
+      border: none;
+      color: #38bdf8;
+      border-radius: 4px;
+      padding: 3px 8px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      transition: all 0.15s ease;
+    }
+    .btn-copiar-pago:hover {
+      filter: brightness(1.2);
+    }
+    .btn-copiar-monto-bs {
+      background: #00d284;
+      border: none;
+      color: #0a1226;
+      font-weight: bold;
+      border-radius: 4px;
+      padding: 3px 8px;
+      cursor: pointer;
+      font-size: 11px;
+      transition: all 0.15s ease;
+    }
+    .btn-copiar-monto-usd {
+      background: #38bdf8;
+      border: none;
+      color: #0a1226;
+      font-weight: bold;
+      border-radius: 4px;
+      padding: 3px 8px;
+      cursor: pointer;
+      font-size: 11px;
+      transition: all 0.15s ease;
     }
 
     .cart-footer {
@@ -476,7 +527,7 @@
     <!-- Cabecera -->
     <header class="header">
       <div class="header-info">
-        <h1 id="tienda-nombre">Mi Tienda Online</h1>
+        <h1 id="tienda-nombre">Cargando tienda...</h1>
         <p>Catálogo interactivo</p>
       </div>
       <div id="tasa-display" class="rate-badge">Tasa: Bs. --</div>
@@ -566,50 +617,102 @@
           </div>
 
           <div class="checkout-section-title">3. Método de Pago</div>
-          <div class="form-group">
-            <select id="selectMetodoPago" class="form-select" onchange="actualizarMetodoPago()">
-              <option value="PAGO_MOVIL">Pago Móvil</option>
-              <option value="TRANSFERENCIA">Transferencia Bancaria</option>
-              <option value="BINANCE">Binance Pay (USDT)</option>
-              <option value="EFECTIVO" id="opcionEfectivo">Efectivo USD (Solo retiro en tienda)</option>
-            </select>
-          </div>
 
-          <!-- Información dinámica según método de pago -->
-          <div id="infoPagoMovil" class="payment-info-box">
-            <strong>Datos Pago Móvil:</strong><br>
-            Banco: <strong>Banesco (0134)</strong><br>
-            Cédula/RIF: <strong>J-50123456-7</strong><br>
-            Teléfono: <strong id="pagoMovilTelf">0412-0000000</strong>
-          </div>
+          <!-- COMPONENTE INTERACTIVO DE PAGO (QUBO SYNC) -->
+          <div class="metodos-pago-container">
+            <h4 class="metodos-pago-titulo">💳 Selecciona tu Método de Pago</h4>
 
-          <div id="infoTransferencia" class="payment-info-box" style="display: none;">
-            <strong>Datos Transferencia:</strong><br>
-            Banco: <strong>Banesco</strong><br>
-            Cuenta: <strong>0134-0000-00-0000000000</strong><br>
-            Titular: <strong>Habibi Sport C.A.</strong><br>
-            RIF: <strong>J-50123456-7</strong>
-          </div>
-
-          <div id="infoBinance" class="payment-info-box" style="display: none;">
-            <strong>Binance Pay:</strong><br>
-            Pay ID: <strong>238914560</strong> <button type="button" class="copy-btn" onclick="copiarTexto('238914560')">Copiar</button><br>
-            USDT (Red TRC20 / BEP20)
-          </div>
-
-          <div id="infoEfectivo" class="payment-info-box" style="display: none; background: #ecfdf5; border-color: #a7f3d0; color: #065f46;">
-            💵 Pagas en divisas en efectivo al momento de retirar en tienda.
-          </div>
-
-          <!-- Campos para referencia según método -->
-          <div id="camposReferenciaContainer">
-            <div id="grupoBancoOrigen" class="form-group">
-              <label for="bancoOrigen">Banco Emisor (Origen) *</label>
-              <input type="text" id="bancoOrigen" class="form-input" placeholder="Ej: Mercantil, Venezuela, Banesco..." />
+            <!-- Pestañas de Selección -->
+            <div class="tabs-pago">
+              <button type="button" id="btnTabPagoMovil" onclick="seleccionarMetodo('pagomovil')" 
+                      class="tab-pago-btn"
+                      style="background:#00d284; color:#0a1226;">
+                🇻🇪 Pago Móvil
+              </button>
+              <button type="button" id="btnTabZelle" onclick="seleccionarMetodo('zelle')" 
+                      class="tab-pago-btn"
+                      style="background:#1e293b; color:#94a3b8;">
+                🇺🇸 Zelle
+              </button>
             </div>
-            <div class="form-group">
-              <label for="referenciaPago" id="labelReferencia">Número de Referencia / Comprobante *</label>
-              <input type="text" id="referenciaPago" class="form-input" placeholder="Últimos dígitos o código de confirmación" />
+
+            <!-- CAJA PAGO MÓVIL -->
+            <div id="cajaPagoMovil" style="display:block;">
+              <div style="background:#111c38; border-radius:8px; padding:12px; margin-bottom:12px;">
+                
+                <!-- Banco -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <span style="color:#94a3b8; font-size:13px;">Banco:</span>
+                  <span id="pmBanco" style="font-weight:bold;">0102 - Banco de Venezuela</span>
+                </div>
+
+                <!-- Teléfono con Copiar -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <span style="color:#94a3b8; font-size:13px;">Teléfono:</span>
+                  <div>
+                    <span id="pmTelefono" style="font-weight:bold; margin-right:8px;">04121234567</span>
+                    <button type="button" onclick="copiarAlPortapapeles('pmTelefono', this)" class="btn-copiar-pago">Copiar</button>
+                  </div>
+                </div>
+
+                <!-- Cédula / RIF con Copiar -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <span style="color:#94a3b8; font-size:13px;">Cédula / RIF:</span>
+                  <div>
+                    <span id="pmCedula" style="font-weight:bold; margin-right:8px;">V-15609751</span>
+                    <button type="button" onclick="copiarAlPortapapeles('pmCedula', this)" class="btn-copiar-pago">Copiar</button>
+                  </div>
+                </div>
+
+                <!-- Monto Exacto en Bs con Copiar -->
+                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #213054; padding-top:8px;">
+                  <span style="color:#00d284; font-size:13px; font-weight:bold;">Monto a Transferir:</span>
+                  <div>
+                    <span id="pmMontoBs" style="color:#00d284; font-weight:bold; margin-right:8px;">Bs. 0,00</span>
+                    <button type="button" onclick="copiarAlPortapapeles('pmMontoBs', this)" class="btn-copiar-monto-bs">Copiar Monto</button>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Referencia Input -->
+              <label style="font-size:12px; color:#94a3b8; display:block; margin-bottom:4px;">Número de Referencia (Últimos 4 o 6 dígitos):</label>
+              <input type="text" id="refPagoMovil" placeholder="Ej: 849201" style="width:100%; box-sizing:border-box; padding:10px; border-radius:6px; border:1px solid #213054; background:#0a1226; color:#fff; margin-bottom:4px;" />
+            </div>
+
+            <!-- CAJA ZELLE -->
+            <div id="cajaZelle" style="display:none;">
+              <div style="background:#111c38; border-radius:8px; padding:12px; margin-bottom:12px;">
+                
+                <!-- Titular -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <span style="color:#94a3b8; font-size:13px;">Titular:</span>
+                  <span id="zelleTitular" style="font-weight:bold;">Inversiones Qubo C.A.</span>
+                </div>
+
+                <!-- Correo con Copiar -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <span style="color:#94a3b8; font-size:13px;">Correo Zelle:</span>
+                  <div>
+                    <span id="zelleCorreo" style="font-weight:bold; margin-right:8px;">pagos@qubo.com</span>
+                    <button type="button" onclick="copiarAlPortapapeles('zelleCorreo', this)" class="btn-copiar-pago">Copiar</button>
+                  </div>
+                </div>
+
+                <!-- Monto en USD con Copiar -->
+                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #213054; padding-top:8px;">
+                  <span style="color:#38bdf8; font-size:13px; font-weight:bold;">Monto a Enviar:</span>
+                  <div>
+                    <span id="zelleMontoUsd" style="color:#38bdf8; font-weight:bold; margin-right:8px;">$0.00</span>
+                    <button type="button" onclick="copiarAlPortapapeles('zelleMontoUsd', this)" class="btn-copiar-monto-usd">Copiar Monto</button>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Titular emisor de Zelle -->
+              <label style="font-size:12px; color:#94a3b8; display:block; margin-bottom:4px;">Nombre del Titular que envía el Zelle:</label>
+              <input type="text" id="refZelleTitular" placeholder="Ej: Carlos Pérez" style="width:100%; box-sizing:border-box; padding:10px; border-radius:6px; border:1px solid #213054; background:#0a1226; color:#fff; margin-bottom:4px;" />
             </div>
           </div>
         </div>
@@ -627,33 +730,38 @@
     // Catálogo de contingencia en caso de pruebas locales sin backend
     const PRODUCTOS_FALLBACK = {
       config: {
-        nombre_tienda: "Habibi Sport",
-        tasa_bcv: "888.89",
-        whatsapp_contacto: "584120000000"
+        nombre_tienda: "QUBO Sync",
+        tasa_bcv: "889.26",
+        whatsapp_contacto: "584121234567",
+        pagomovil_banco: "0102 - Banco de Venezuela",
+        pagomovil_telefono: "04121234567",
+        pagomovil_cedula: "V-15609751",
+        zelle_titular: "Inversiones Qubo C.A.",
+        zelle_correo: "pagos@qubo.com"
       },
       productos: [
         {
-          id: 3,
-          nombre: "Oakley Radar ev triple A",
-          precio_usd: "20.00",
-          stock: 8,
-          imagen_url: "./imagenes/Oakley-Radar-ev-triple-A.jpeg",
+          id: 120001,
+          nombre: "Oakley Radar ev Espejo Doble A",
+          precio_usd: "10.00",
+          stock: 1,
+          imagen_url: "https://iili.io/ngwYOEG.jpg",
           categoria: "Accesorios"
         },
         {
-          id: 2,
-          nombre: "Oakley Juliet triple A",
+          id: 90001,
+          nombre: "Oakley Murciélago Negro TRIPLE A",
           precio_usd: "15.00",
-          stock: 5,
-          imagen_url: "./imagenes/Oakley-Juliet-triple-A.jpeg",
+          stock: 1,
+          imagen_url: "https://iili.io/ngwqkCP.jpg",
           categoria: "Accesorios"
         },
         {
-          id: 1,
-          nombre: "Oakley Kilyan mbappe triple A",
-          precio_usd: "12.00",
-          stock: 10,
-          imagen_url: "./imagenes/Oakley-Kilyan-mbappe-triple-A.jpeg",
+          id: 60009,
+          nombre: "Oakley Juliet espejo Triple A",
+          precio_usd: "15.00",
+          stock: 2,
+          imagen_url: "https://iili.io/nghdArl.jpg",
           categoria: "Accesorios"
         }
       ]
@@ -664,6 +772,13 @@
     let tasaGlobal = 0;
     let categoriaActiva = 'Todos';
     let carrito = []; // Formato: [{ id, nombre, precio_usd, imagen_url, cantidad }]
+    let metodoPagoActivo = 'pagomovil'; // 'pagomovil' | 'zelle'
+
+    // Obtener parámetro de tienda de la URL (?tienda={id} o ?tienda={slug})
+    function obtenerParametroTienda() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('tienda') || '';
+    }
 
     function formatearRutaImagen(url) {
       if (!url) return '';
@@ -767,7 +882,6 @@
       }
 
       actualizarCarritoUI();
-      // Feedback visual leve en el botón flotante
       const btn = document.getElementById('floatingCartBtn');
       btn.style.transform = 'scale(1.1)';
       setTimeout(() => btn.style.transform = 'scale(1)', 150);
@@ -837,7 +951,7 @@
         `;
       }).join('');
 
-      // Renderizar totales
+      // Renderizar totales generales
       totalsBox.style.display = 'block';
       checkoutForm.style.display = 'block';
       btnConfirmar.disabled = false;
@@ -846,6 +960,16 @@
       document.getElementById('cartTasaLabel').textContent = `Bs. ${tasaGlobal.toFixed(2)}`;
       document.getElementById('cartTotalUsd').textContent = `$${totalUSD.toFixed(2)}`;
       document.getElementById('cartTotalBs').textContent = `Bs. ${totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+      // Actualizar montos en la caja de Pago Móvil y Zelle
+      const pmMontoEl = document.getElementById('pmMontoBs');
+      if (pmMontoEl) {
+        pmMontoEl.textContent = `Bs. ${totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      }
+      const zelleMontoEl = document.getElementById('zelleMontoUsd');
+      if (zelleMontoEl) {
+        zelleMontoEl.textContent = `$${totalUSD.toFixed(2)}`;
+      }
     }
 
     function abrirCarrito() {
@@ -863,90 +987,94 @@
       if (e.target.id === 'cartOverlay') cerrarCarrito();
     }
 
-    /* -------------------------------------------------------------
-       MODALIDAD DE ENTREGA Y PAGO
-       ------------------------------------------------------------- */
     function actualizarModalidadEntrega() {
       const modalidad = document.querySelector('input[name="modalidadEntrega"]:checked').value;
       const optRetiro = document.getElementById('optEntregaRetiro');
       const optDelivery = document.getElementById('optEntregaDelivery');
       const campoDir = document.getElementById('campoDireccionContainer');
       const dirInput = document.getElementById('direccionEntrega');
-      const selectPago = document.getElementById('selectMetodoPago');
-      const optEfectivo = document.getElementById('opcionEfectivo');
 
       if (modalidad === 'DOMICILIO') {
         optRetiro.classList.remove('selected');
         optDelivery.classList.add('selected');
         campoDir.style.display = 'block';
         dirInput.required = true;
-
-        // Ocultar opción Efectivo en delivery
-        optEfectivo.style.display = 'none';
-        if (selectPago.value === 'EFECTIVO') {
-          selectPago.value = 'PAGO_MOVIL';
-          actualizarMetodoPago();
-        }
       } else {
         optDelivery.classList.remove('selected');
         optRetiro.classList.add('selected');
         campoDir.style.display = 'none';
         dirInput.required = false;
-        optEfectivo.style.display = 'block';
       }
     }
 
-    function actualizarMetodoPago() {
-      const metodo = document.getElementById('selectMetodoPago').value;
-      const boxPagoMovil = document.getElementById('infoPagoMovil');
-      const boxTransf = document.getElementById('infoTransferencia');
-      const boxBinance = document.getElementById('infoBinance');
-      const boxEfectivo = document.getElementById('infoEfectivo');
-      const camposRef = document.getElementById('camposReferenciaContainer');
-      const grupoBanco = document.getElementById('grupoBancoOrigen');
-      const labelRef = document.getElementById('labelReferencia');
-      const inputRef = document.getElementById('referenciaPago');
-      const inputBanco = document.getElementById('bancoOrigen');
+    /* -------------------------------------------------------------
+       PESTAÑAS DE PAGO (PAGO MÓVIL / ZELLE)
+       ------------------------------------------------------------- */
+    function seleccionarMetodo(metodo) {
+      metodoPagoActivo = metodo;
+      const tabPM = document.getElementById('btnTabPagoMovil');
+      const tabZ = document.getElementById('btnTabZelle');
+      const cajaPM = document.getElementById('cajaPagoMovil');
+      const cajaZ = document.getElementById('cajaZelle');
 
-      // Ocultar todas las cajas
-      boxPagoMovil.style.display = 'none';
-      boxTransf.style.display = 'none';
-      boxBinance.style.display = 'none';
-      boxEfectivo.style.display = 'none';
-
-      if (metodo === 'PAGO_MOVIL') {
-        boxPagoMovil.style.display = 'block';
-        camposRef.style.display = 'block';
-        grupoBanco.style.display = 'block';
-        labelRef.textContent = 'Número de Referencia Pago Móvil *';
-        inputRef.required = true;
-        inputBanco.required = true;
-      } else if (metodo === 'TRANSFERENCIA') {
-        boxTransf.style.display = 'block';
-        camposRef.style.display = 'block';
-        grupoBanco.style.display = 'block';
-        labelRef.textContent = 'Número de Referencia Transferencia *';
-        inputRef.required = true;
-        inputBanco.required = true;
-      } else if (metodo === 'BINANCE') {
-        boxBinance.style.display = 'block';
-        camposRef.style.display = 'block';
-        grupoBanco.style.display = 'none';
-        labelRef.textContent = 'ID de Transacción / Pay ID / Hash *';
-        inputRef.required = true;
-        inputBanco.required = false;
-      } else if (metodo === 'EFECTIVO') {
-        boxEfectivo.style.display = 'block';
-        camposRef.style.display = 'none';
-        inputRef.required = false;
-        inputBanco.required = false;
+      if (metodo === 'pagomovil') {
+        tabPM.style.background = '#00d284';
+        tabPM.style.color = '#0a1226';
+        tabZ.style.background = '#1e293b';
+        tabZ.style.color = '#94a3b8';
+        cajaPM.style.display = 'block';
+        cajaZ.style.display = 'none';
+      } else {
+        tabZ.style.background = '#38bdf8';
+        tabZ.style.color = '#0a1226';
+        tabPM.style.background = '#1e293b';
+        tabPM.style.color = '#94a3b8';
+        cajaPM.style.display = 'none';
+        cajaZ.style.display = 'block';
       }
     }
 
-    function copiarTexto(texto) {
-      navigator.clipboard.writeText(texto).then(() => {
-        alert('Copiado al portapapeles: ' + texto);
-      });
+    /* -------------------------------------------------------------
+       CLIPBOARD API CON RETROALIMENTACIÓN
+       ------------------------------------------------------------- */
+    function copiarAlPortapapeles(idElemento, boton) {
+      const elemento = document.getElementById(idElemento);
+      if (!elemento) return;
+
+      // Limpia símbolos como $, Bs., espacios adicionales
+      let texto = elemento.innerText.replace('Bs.', '').replace('$', '').trim();
+
+      function feedback() {
+        const textoOriginal = boton.innerText;
+        boton.innerText = '¡Copiado!';
+        boton.style.filter = 'brightness(1.3)';
+        setTimeout(() => {
+          boton.innerText = textoOriginal;
+          boton.style.filter = 'none';
+        }, 1500);
+      }
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(texto).then(feedback).catch(() => fallbackCopy(texto, feedback));
+      } else {
+        fallbackCopy(texto, feedback);
+      }
+    }
+
+    function fallbackCopy(texto, callback) {
+      const textarea = document.createElement('textarea');
+      textarea.value = texto;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        if (callback) callback();
+      } catch (err) {
+        console.error('Error al copiar:', err);
+      }
+      document.body.removeChild(textarea);
     }
 
     /* -------------------------------------------------------------
@@ -960,9 +1088,6 @@
       const telefono = document.getElementById('clienteTelefono').value.trim();
       const modalidadEntrega = document.querySelector('input[name="modalidadEntrega"]:checked').value;
       const direccion = document.getElementById('direccionEntrega').value.trim();
-      const metodoPago = document.getElementById('selectMetodoPago').value;
-      const bancoOrigen = document.getElementById('bancoOrigen').value.trim();
-      const referencia = document.getElementById('referenciaPago').value.trim();
 
       // Validaciones básicas
       if (!cedula || !nombre || !telefono) {
@@ -971,17 +1096,33 @@
       if (modalidadEntrega === 'DOMICILIO' && !direccion) {
         return alert('Por favor ingresa la dirección completa para el envío a domicilio.');
       }
-      if (metodoPago !== 'EFECTIVO' && !referencia) {
-        return alert('Por favor ingresa la referencia o ID de la transacción de pago.');
-      }
-      if ((metodoPago === 'PAGO_MOVIL' || metodoPago === 'TRANSFERENCIA') && !bancoOrigen) {
-        return alert('Por favor indica tu banco de origen.');
+
+      // Validaciones del método de pago
+      const metodoFinal = metodoPagoActivo === 'zelle' ? 'ZELLE' : 'PAGOMOVIL';
+      let referencia = '';
+      let titularZelle = '';
+
+      if (metodoFinal === 'PAGOMOVIL') {
+        const inputRef = document.getElementById('refPagoMovil');
+        referencia = inputRef ? inputRef.value.trim() : '';
+        if (!referencia) {
+          return alert('Por favor ingresa el número de referencia del Pago Móvil (últimos 4 a 6 dígitos).');
+        }
+      } else if (metodoFinal === 'ZELLE') {
+        const inputTitular = document.getElementById('refZelleTitular');
+        titularZelle = inputTitular ? inputTitular.value.trim() : '';
+        if (!titularZelle) {
+          return alert('Por favor ingresa el nombre del titular que envía el Zelle.');
+        }
+        referencia = titularZelle;
       }
 
       const totalUSD = carrito.reduce((sum, item) => sum + (item.precio_usd * item.cantidad), 0);
       const totalBs = tasaGlobal > 0 ? (totalUSD * tasaGlobal) : 0;
+      const tienda = obtenerParametroTienda();
 
       const payload = {
+        tienda: tienda || null,
         cliente: {
           cedula_rif: cedula,
           nombre: nombre,
@@ -993,9 +1134,10 @@
           direccion: modalidadEntrega === 'DOMICILIO' ? direccion : ''
         },
         pago: {
-          metodo: metodoPago,
-          banco_origen: bancoOrigen,
-          referencia: referencia
+          metodo: metodoFinal,
+          referencia: referencia,
+          titular_origen: titularZelle,
+          banco_origen: metodoFinal === 'PAGOMOVIL' ? (configGlobal.pagomovil_banco || '') : 'Zelle'
         },
         totales: {
           tasa_bcv: tasaGlobal,
@@ -1034,13 +1176,6 @@
           resumenItems += `• ${i.cantidad}x ${i.nombre} ($${(i.precio_usd * i.cantidad).toFixed(2)})\n`;
         });
 
-        const nombresMetodos = {
-          PAGO_MOVIL: 'Pago Móvil',
-          TRANSFERENCIA: 'Transferencia Bancaria',
-          BINANCE: 'Binance Pay (USDT)',
-          EFECTIVO: 'Efectivo USD (en tienda)'
-        };
-
         let msg = `🛍️ *NUEVO PEDIDO CONFIRMADO: ${ordenId}*\n`;
         msg += `------------------------------------\n`;
         msg += `👤 *Cliente:* ${nombre}\n`;
@@ -1050,20 +1185,26 @@
         if (modalidadEntrega === 'DOMICILIO') {
           msg += `📍 *Dirección:* ${direccion}\n`;
         }
-        msg += `💳 *Método de Pago:* ${nombresMetodos[metodoPago] || metodoPago}\n`;
-        if (metodoPago !== 'EFECTIVO') {
-          if (bancoOrigen) msg += `🏦 *Banco Origen:* ${bancoOrigen}\n`;
+        
+        if (metodoFinal === 'PAGOMOVIL') {
+          msg += `💳 *Método de Pago:* 🇻🇪 Pago Móvil\n`;
+          msg += `🏦 *Banco Receptor:* ${configGlobal.pagomovil_banco || '0102 - Banco de Venezuela'}\n`;
           msg += `🔢 *Referencia:* ${referencia}\n`;
+        } else {
+          msg += `💳 *Método de Pago:* 🇺🇸 Zelle\n`;
+          msg += `👤 *Titular Emisor:* ${titularZelle}\n`;
+          msg += `📧 *Zelle Receptor:* ${configGlobal.zelle_correo || 'pagos@qubo.com'}\n`;
         }
+
         msg += `------------------------------------\n`;
         msg += `🛒 *DETALLE DEL PEDIDO:*\n${resumenItems}`;
         msg += `------------------------------------\n`;
         msg += `💵 *Total USD:* $${totalUSD.toFixed(2)}\n`;
         msg += `🇻🇪 *Total Bs:* Bs. ${totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2 })}\n`;
         msg += `(Tasa BCV: ${tasaGlobal.toFixed(2)} Bs/$)\n\n`;
-        msg += `Adjunto mi comprobante para validar la orden. ¡Gracias!`;
+        msg += `Adjunto mi comprobante para validar la orden. ¡Muchas gracias!`;
 
-        const telfTienda = configGlobal.whatsapp_contacto || '584120000000';
+        const telfTienda = configGlobal.whatsapp_contacto || configGlobal.pagomovil_telefono || '584120000000';
         const urlWa = `https://wa.me/${telfTienda}?text=${encodeURIComponent(msg)}`;
 
         // Limpiar carrito y cerrar
@@ -1091,19 +1232,34 @@
       catalogoGlobal = data.productos || [];
       tasaGlobal = parseFloat(configGlobal.tasa_bcv || 0);
 
+      // Nombre de la tienda
       if (configGlobal.nombre_tienda) {
         document.getElementById('tienda-nombre').textContent = configGlobal.nombre_tienda;
-      }
-      if (configGlobal.whatsapp_contacto) {
-        const elTelf = document.getElementById('pagoMovilTelf');
-        if (elTelf) elTelf.textContent = configGlobal.whatsapp_contacto;
+        document.title = `${configGlobal.nombre_tienda} - Catálogo Interactivo`;
       }
 
+      // Tasa de cambio BCV
       if (tasaGlobal > 0) {
         const tasaEl = document.getElementById('tasa-display');
         tasaEl.textContent = `Tasa: Bs. ${tasaGlobal.toFixed(2)}`;
         tasaEl.style.display = 'inline-block';
       }
+
+      // Actualizar datos de Pago Móvil
+      const bancoPM = configGlobal.pagomovil_banco || '0102 - Banco de Venezuela';
+      const telfPM = configGlobal.pagomovil_telefono || configGlobal.whatsapp_contacto || '04121234567';
+      const cedulaPM = configGlobal.pagomovil_cedula || 'V-15609751';
+
+      if (document.getElementById('pmBanco')) document.getElementById('pmBanco').textContent = bancoPM;
+      if (document.getElementById('pmTelefono')) document.getElementById('pmTelefono').textContent = telfPM;
+      if (document.getElementById('pmCedula')) document.getElementById('pmCedula').textContent = cedulaPM;
+
+      // Actualizar datos de Zelle
+      const titularZelle = configGlobal.zelle_titular || configGlobal.nombre_tienda || 'Inversiones Qubo C.A.';
+      const correoZelle = configGlobal.zelle_correo || 'pagos@qubo.com';
+
+      if (document.getElementById('zelleTitular')) document.getElementById('zelleTitular').textContent = titularZelle;
+      if (document.getElementById('zelleCorreo')) document.getElementById('zelleCorreo').textContent = correoZelle;
 
       generarCategorias();
       renderizarGrid();
@@ -1116,7 +1272,9 @@
 
     async function cargarCatalogo() {
       try {
-        const res = await fetch('/api/productos');
+        const tienda = obtenerParametroTienda();
+        const url = tienda ? `/api/productos?tienda=${encodeURIComponent(tienda)}` : '/api/productos';
+        const res = await fetch(url);
         if (!res.ok) throw new Error('Error al consultar API');
         const data = await res.json();
         inicializarUI(data);
